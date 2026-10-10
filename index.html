@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Garaje Soñado</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #111 0%, #1e1e1e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            text-align: center;
+            padding: 50px 20px 40px;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+ .nav {
+    margin-top: 24px;
+}
+
+.nav-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;      /* si no entran en pantallas chicas, bajan de línea */
+    gap: 30px;
+    list-style: none;     /* saca las viñetas */
+}
+
+.filter-btn {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: #fff;
+    font-family: inherit;
+    font-size: 1em;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 8px 4px;
+    cursor: pointer;
+    transition: color .2s, border-color .2s;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    color: #4ecdc4;
+    border-bottom-color: #4ecdc4;
+}
+
+.vehicle-card[hidden] { display: none; }
+
+        .header h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 4em;
+            letter-spacing: 4px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            font-size: 1.05em;
+            color: #888;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+   
+
+        /* ── GRID ── */
+        .garage-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ── CARD ── */
+        .vehicle-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .vehicle-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55);
+            border-color: rgba(78, 205, 196, 0.45);
+        }
+
+        /* ── IMAGE ── */
+        .vehicle-image {
+            width: 100%;
+            height: 240px;
+            background-color: #2a2a2a;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .vehicle-image::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 55%);
+        }
+
+        /* ── BADGE ── */
+        .vehicle-badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: rgba(78, 205, 196, 0.92);
+            color: #000;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 2;
+        }
+
+        /* ── INFO ── */
+        .vehicle-info {
+            padding: 22px 24px 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .vehicle-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2em;
+            letter-spacing: 2px;
+            color: #4ecdc4;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .vehicle-model {
+            font-size: 0.95em;
+            color: #777;
+            margin-bottom: 14px;
+        }
+
+        /* ── SPECS ── */
+        .specs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .spec-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 11px 13px;
+            border-radius: 8px;
+            border-left: 3px solid #4ecdc4;
+        }
+
+        .spec-label {
+            font-size: 0.72em;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .spec-value {
+            font-size: 1.05em;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 4px;
+        }
+
+        /* ── STATS ── */
+        .stats-bar {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .stat {
+            margin-bottom: 12px;
+        }
+
+        .stat:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-name {
+            font-size: 0.82em;
+            color: #aaa;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-bar {
+            height: 7px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .stat-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+            border-radius: 10px;
+            width: 0;
+            transition: width 1s ease;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2.8em; }
+            .garage-container { grid-template-columns: 1fr; }
+        }
+
+        /* ── BOTÓN "+" AÑADIR ── */
+        .add-card {
+            min-height: 300px;
+            border: 2px dashed rgba(78, 205, 196, 0.45);
+            border-radius: 16px;
+            background: rgba(78, 205, 196, 0.04);
+            color: #4ecdc4;
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: transform 0.35s ease, background 0.35s ease, border-color 0.35s ease;
+        }
+
+        .add-card .plus { font-size: 4.5em; font-weight: 200; line-height: 1; }
+
+        .add-card:hover,
+        .add-card:focus-visible {
+            transform: translateY(-10px);
+            background: rgba(78, 205, 196, 0.1);
+            border-color: #4ecdc4;
+            outline: none;
+        }
+
+        /* ── BORRAR TARJETA PROPIA ── */
+        .delete-btn,
+        .edit-btn {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 3;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0, 0, 0, 0.65);
+            color: #fff;
+            font-size: 1.3em;
+            line-height: 1;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s, background 0.2s;
+        }
+
+        .vehicle-card:hover .delete-btn,
+        .vehicle-card:hover .edit-btn,
+        .delete-btn:focus-visible,
+        .edit-btn:focus-visible { opacity: 1; }
+        .delete-btn { left: 52px; }
+        .delete-btn:hover { background: #ff6b6b; }
+        .edit-btn { font-size: 1.1em; }
+        .edit-btn:hover { background: #4ecdc4; color: #000; }
+        @media (hover: none) { .delete-btn, .edit-btn { opacity: 1; } }
+
+        /* ── MODAL ── */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 30px 16px;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .modal-backdrop[hidden] { display: none; }
+
+        .modal {
+            width: 100%;
+            max-width: 520px;
+            background: #1b1b1b;
+            border: 1px solid rgba(78, 205, 196, 0.35);
+            border-radius: 16px;
+            padding: 26px 24px;
+            color-scheme: dark;
+        }
+
+        .modal h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2em;
+            letter-spacing: 2px;
+            color: #4ecdc4;
+            margin-bottom: 16px;
+        }
+
+        .modal label,
+        .modal .group-title {
+            display: block;
+            font-size: 0.75em;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 14px;
+        }
+
+        .modal .group-title { margin-bottom: 8px; }
+
+        .modal input,
+        .modal select {
+            display: block;
+            width: 100%;
+            margin-top: 6px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 1rem;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        /* menús desplegables: fondo sólido para que las opciones se lean */
+        .modal select {
+            background-color: #2a2a2a;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .modal select option {
+            background-color: #2a2a2a;
+            color: #fff;
+        }
+
+        .modal input:focus,
+        .modal select:focus { outline: none; border-color: #4ecdc4; }
+
+        .modal .row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .modal .row input,
+        .modal .row select { margin-top: 0; min-width: 0; width: auto; flex: 1 1 0; }
+        .modal .row input[type="number"] { max-width: 90px; }
+        .modal .row .spec-custom { flex: 1 1 100%; }
+
+        .row-x {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            color: #ccc;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+
+        .row-x:hover { background: #ff6b6b; color: #fff; }
+
+        .link-btn {
+            background: none;
+            border: none;
+            color: #4ecdc4;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 4px 0;
+            margin-bottom: 14px;
+        }
+
+        .link-btn:hover { text-decoration: underline; }
+
+        .modal .actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: none;
+            color: #fff;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn.primary { background: #4ecdc4; border-color: #4ecdc4; color: #000; }
+        .btn:hover { filter: brightness(1.15); }
+    </style>
+</head>
+<body>
+<header>
+    <div class="header">
+        <h1>🏁 Mi Garaje Soñado 🏁</h1>
+        <p>Los fierros que quiero tener</p>
+        <nav class="nav">
+        <ul class="nav-links">
+      <li><button class="filter-btn active" data-filter="todos">Todos</button></li>
+      <li><button class="filter-btn" data-filter="deportivo">Deportivos</button></li>
+      <li><button class="filter-btn" data-filter="off-road">Off-road</button></li>
+      <li><button class="filter-btn" data-filter="moto">Motos</button></li>
+      <li><button class="filter-btn" data-filter="camioneta">Camionetas</button></li>
+    </ul>
+  </nav>
+    </div>
+</header>
+
+    <div class="garage-container">
+        <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+        <div class="vehicle-card" data-category="deportivo">
+            <div class="vehicle-image" style="background-image: url('https://images.unsplash.com/photo-1606327249218-b5d2f82f339c?q=80&w=1170&auto=format&fit=crop');">
+                <div class="vehicle-badge">Deportivo</div>
+            </div>
+            <div class="vehicle-info">
+                <div class="vehicle-name">Golf GTI</div>
+                <div class="specs">
+                    <div class="spec-item">
+                        <div class="spec-label">Potencia</div>
+                        <div class="spec-value">200 HP</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">0–100 km/h</div>
+                        <div class="spec-value">6.8 seg</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Motor</div>
+                        <div class="spec-value">2.0 TSI</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Velocidad Máx.</div>
+                        <div class="spec-value">250 km/h</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Torque</div>
+                        <div class="spec-value">320 Nm</div>
+                    </div>
+                </div>
+                <div class="stats-bar">
+                    <div class="stat">
+                        <div class="stat-name"><span>Facha</span><span>75%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="75%"></div></div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-name"><span>Aceleración</span><span>85%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="85%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+        <div class="vehicle-card" data-category="deportivo">
+            <div class="vehicle-image" style="background-image: url('https://images.unsplash.com/photo-1571774823997-95823c1ceaf0?q=80&w=1171&auto=format&fit=crop');">
+                <div class="vehicle-badge">Deportivo</div>
+            </div>
+            <div class="vehicle-info">
+                <div class="vehicle-name">Toyota GT86</div>
+                <div class="specs">
+                    <div class="spec-item">
+                        <div class="spec-label">Potencia</div>
+                        <div class="spec-value">200 HP</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">0–100 km/h</div>
+                        <div class="spec-value">7.6 seg</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Torque</div>
+                        <div class="spec-value">212 Nm</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Velocidad Máx.</div>
+                        <div class="spec-value">210 km/h</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Motor</div>
+                        <div class="spec-value">2.0 Boxer</div>
+                    </div>
+                </div>
+                <div class="stats-bar">
+                    <div class="stat">
+                        <div class="stat-name"><span>Facha</span><span>80%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="80%"></div></div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-name"><span>Aceleración</span><span>78%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="78%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+        <div class="vehicle-card" data-category="off-road">
+            <div class="vehicle-image" style="background-image: url('https://images.unsplash.com/photo-1641784001736-78e8fa1d6a82?q=80&w=826&auto=format&fit=crop');">
+                <div class="vehicle-badge">Off-Road</div>
+            </div>
+            <div class="vehicle-info">
+                <div class="vehicle-name">Jeep Wrangler</div>
+                <div class="specs">
+                    <div class="spec-item">
+                        <div class="spec-label">Potencia</div>
+                        <div class="spec-value">285 HP</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Motor</div>
+                        <div class="spec-value">V6 3.6L</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Tracción</div>
+                        <div class="spec-value">4×4</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Consumo</div>
+                        <div class="spec-value">10 L/100km</div>
+                    </div>
+                </div>
+                <div class="stats-bar">
+                    <div class="stat">
+                        <div class="stat-name"><span>Facha</span><span>80%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="80%"></div></div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-name"><span>Off-Road</span><span>95%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="95%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+        <div class="vehicle-card" data-category="off-road">
+            <div class="vehicle-image" style="background-image: url('https://images.unsplash.com/photo-1730830812275-05d20a099679?q=80&w=1229&auto=format&fit=crop');">
+                <div class="vehicle-badge">Off-Road</div>
+            </div>
+            <div class="vehicle-info">
+                <div class="vehicle-name">Suzuki Jimny</div>
+                <div class="specs">
+                    <div class="spec-item">
+                        <div class="spec-label">Potencia</div>
+                        <div class="spec-value">100 HP</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Torque</div>
+                        <div class="spec-value">130 Nm</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Motor</div>
+                        <div class="spec-value">1.5L</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Tracción</div>
+                        <div class="spec-value">4×4</div>
+                    </div>
+                </div>
+                <div class="stats-bar">
+                    <div class="stat">
+                        <div class="stat-name"><span>Facha</span><span>90%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="90%"></div></div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-name"><span>Off-Road</span><span>85%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="85%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+        <div class="vehicle-card" data-category="moto">
+            <div class="vehicle-image" style="background-image: url('https://images.unsplash.com/photo-1659465493788-046d031bcd35?q=80&w=1172&auto=format&fit=crop');">
+                <div class="vehicle-badge">Moto</div>
+            </div>
+            <div class="vehicle-info">
+                <div class="vehicle-name">Chopper</div>
+                <div class="specs">
+                    <div class="spec-item">
+                        <div class="spec-label">Potencia</div>
+                        <div class="spec-value">28 HP</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Motor</div>
+                        <div class="spec-value">400 cc</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Peso</div>
+                        <div class="spec-value">170 kg</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Velocidad Máx.</div>
+                        <div class="spec-value">120 km/h</div>
+                    </div>
+                </div>
+                <div class="stats-bar">
+                    <div class="stat">
+                        <div class="stat-name"><span>Facha</span><span>88%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="88%"></div></div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-name"><span>Onda Retro</span><span>95%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="95%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+        <div class="vehicle-card" data-category="moto">
+            <div class="vehicle-image" style="background-image: url('https://images.unsplash.com/photo-1608975213589-14e7f23aeab7?q=80&w=687&auto=format&fit=crop');">
+                <div class="vehicle-badge">Moto</div>
+            </div>
+            <div class="vehicle-info">
+                <div class="vehicle-name">Naked</div>
+                <div class="specs">
+                    <div class="spec-item">
+                        <div class="spec-label">Potencia</div>
+                        <div class="spec-value">45 HP</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Motor</div>
+                        <div class="spec-value">400 cc</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Peso</div>
+                        <div class="spec-value">150 kg</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Velocidad Máx.</div>
+                        <div class="spec-value">150 km/h</div>
+                    </div>
+                </div>
+                <div class="stats-bar">
+                    <div class="stat">
+                        <div class="stat-name"><span>Facha</span><span>85%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="85%"></div></div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-name"><span>Agilidad</span><span>90%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="90%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+        <div class="vehicle-card" data-category="camioneta">
+            <div class="vehicle-image" style="background-image: url('https://images.unsplash.com/photo-1631377875146-b10de5d7acb7?q=80&w=1170&auto=format&fit=crop');">
+                <div class="vehicle-badge">Camioneta</div>
+            </div>
+            <div class="vehicle-info">
+                <div class="vehicle-name">Toyota Hilux</div>
+                <div class="specs">
+                    <div class="spec-item">
+                        <div class="spec-label">Potencia</div>
+                        <div class="spec-value">177 HP</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Motor</div>
+                        <div class="spec-value">2.8L Turbodiesel</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Carga Máx.</div>
+                        <div class="spec-value">1.000 kg</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Consumo</div>
+                        <div class="spec-value">10 L/100km</div>
+                    </div>
+                </div>
+                <div class="stats-bar">
+                    <div class="stat">
+                        <div class="stat-name"><span>Facha</span><span>82%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="82%"></div></div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-name"><span>Durabilidad</span><span>98%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="98%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+        <div class="vehicle-card" data-category="camioneta">
+            <div class="vehicle-image" style="background-image: url('https://autotest.com.ar/wp-content/uploads/2022/10/Renault-Alaskan-Outsider-lanzamiento-trompa.jpg'); background-color: #2a2a2a;">
+                <div class="vehicle-badge">Camioneta</div>
+            </div>
+            <div class="vehicle-info">
+                <div class="vehicle-name">Renault Alaskan</div>
+                <div class="specs">
+                    <div class="spec-item">
+                        <div class="spec-label">Potencia</div>
+                        <div class="spec-value">180 HP</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Motor</div>
+                        <div class="spec-value">2.3L Diesel</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Carga Máx.</div>
+                        <div class="spec-value">1.000 kg</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Consumo</div>
+                        <div class="spec-value">11L/100km</div>
+                    </div>
+                </div>
+                <div class="stats-bar">
+                    <div class="stat">
+                        <div class="stat-name"><span>Facha</span><span>78%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="78%"></div></div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-name"><span>Eficiencia</span><span>92%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="92%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+        <div class="vehicle-card" data-category="camioneta">
+            <div class="vehicle-image" style="background-image: url('https://cdn.autopapo.com.br/box/uploads/2023/06/21192339/nova-ranger_xlt-1-1920x1280.jpg'); background-color: #2a2a2a;">
+                <div class="vehicle-badge">Camioneta</div>
+            </div>
+            <div class="vehicle-info">
+                <div class="vehicle-name">Ford Ranger</div>
+                <div class="specs">
+                    <div class="spec-item">
+                        <div class="spec-label">Potencia</div>
+                        <div class="spec-value">170 HP</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Motor</div>
+                        <div class="spec-value">2.0L Turbodiesel</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Carga Máx.</div>
+                        <div class="spec-value">1.000 kg</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Consumo</div>
+                        <div class="spec-value">12L/100km</div>
+                    </div>
+                </div>
+                <div class="stats-bar">
+                    <div class="stat">
+                        <div class="stat-name"><span>Facha</span><span>84%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="84%"></div></div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-name"><span>Versatilidad</span><span>88%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="88%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+    <div class="vehicle-card" data-category="camioneta">
+            <div class="vehicle-image" style="background-image: url('https://di-sitebuilder-assets.dealerinspire.com/Ford/MLP/Maverick/2024/color-Terrain.jpg'); background-color: #2a2a2a;">
+                <div class="vehicle-badge">camioneta/auto</div>
+            </div>
+            <div class="vehicle-info">
+                <div class="vehicle-name">ford maverick</div>
+                <div class="specs">
+                    <div class="spec-item">
+                        <div class="spec-label">Potencia</div>
+                        <div class="spec-value">191 HP</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Motor</div>
+                        <div class="spec-value">2.5L hibrido</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Carga Máx.</div>
+                        <div class="spec-value">680 kg</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">F. Remolque</div>
+                        <div class="spec-value">1.800 kg</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Consumo</div>
+                        <div class="spec-value">6L/100km</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Tracción</div>
+                        <div class="spec-value">4x2</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">caja</div>
+                        <div class="spec-value">flexbed</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+    <div class="vehicle-card" data-category="camioneta">
+        <div class="vehicle-image" style="background-image: url('https://cdn.motor1.com/images/mgl/40xLyk/s1/foton-tunland-v9-2025.jpg'); background-color: #2a2a2a;">
+            <div class="vehicle-badge">Camioneta</div>
+        </div>
+        <div class="vehicle-info">
+            <div class="vehicle-name">foton tunland v9</div>
+            <div class="specs">
+                <div class="spec-item">
+                    <div class="spec-label">Potencia</div>
+                    <div class="spec-value">175 HP</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Motor</div>
+                    <div class="spec-value">2.0L hybrid diesel</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Torque</div>
+                    <div class="spec-value">451 Nm</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Carga Máx.</div>
+                    <div class="spec-value">750 kg</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Tracción</div>
+                    <div class="spec-value">4x4</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+    <div class="vehicle-card" data-category="camioneta">
+        <div class="vehicle-image" style="background-image: url('https://images.unsplash.com/photo-1633991452837-6a50e247fda5?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); background-color: #2a2a2a;">
+            <div class="vehicle-badge">Camioneta</div>
+        </div>
+        <div class="vehicle-info">
+            <div class="vehicle-name">nissan frontier</div>
+            <div class="specs">
+                <div class="spec-item">
+                    <div class="spec-label">Potencia</div>
+                    <div class="spec-value">160 HP</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Motor</div>
+                    <div class="spec-value">2.3L biturbo diesel</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Torque</div>
+                    <div class="spec-value">450 Nm</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Carga Máx.</div>
+                    <div class="spec-value">1.000 kg</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Consumo</div>
+                    <div class="spec-value">9L/100km</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Tracción</div>
+                    <div class="spec-value">4x2/4x4</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+    <div class="vehicle-card" data-category="camioneta">
+        <div class="vehicle-image" style="background-image: url('https://tse3.mm.bing.net/th/id/OIP.LwN4_JuLFINHXe_43IYM7wHaE8?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'); background-color: #2a2a2a;">
+            <div class="vehicle-badge">Camioneta</div>
+        </div>
+        <div class="vehicle-info">
+            <div class="vehicle-name">foton tunland v7</div>
+            <div class="specs">
+                <div class="spec-item">
+                    <div class="spec-label">Potencia</div>
+                    <div class="spec-value">175 HP</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Motor</div>
+                    <div class="spec-value">2.0L hybrid diesel</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Torque</div>
+                    <div class="spec-value">451 Nm</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Carga Máx.</div>
+                    <div class="spec-value">750 kg</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Tracción</div>
+                    <div class="spec-value">4x4</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+<div class="vehicle-card" data-category="moto">
+            <div class="vehicle-image" style="background-image: url('https://www.motofichas.com/images/cache/01-benelli-leoncino-800-2023-estudio-739-a.jpg');">
+                <div class="vehicle-badge">Moto</div>
+            </div>
+        <div class="vehicle-info">
+            <div class="vehicle-name">Benelli Leoncino 800</div>
+            <div class="specs">
+                <div class="spec-item">
+                    <div class="spec-label">Cilindrada</div>
+                    <div class="spec-value">754 cc</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Motor</div>
+                    <div class="spec-value">4T bicilíndrico</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Torque</div>
+                    <div class="spec-value">68 Nm</div>
+                </div>
+            </div>
+                <div class="stats-bar">
+                    <div class="stat">
+                        <div class="stat-name"><span>Facha</span><span>88%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="88%"></div></div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-name"><span>Onda Retro</span><span>95%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="95%"></div></div>
+                    </div>
+            </div>
+        </div>
+    </div>
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+        <div class="vehicle-card" data-category="moto">
+        <div class="vehicle-image" style="background-image: url('https://www.motofichas.com/images/articulos/ktm/390-smc-r-2025/ktm-390-smc-r-2025-01.jpg'); background-color: #2a2a2a;">
+            <div class="vehicle-badge">Moto</div>
+        </div>
+        <div class="vehicle-info">
+            <div class="vehicle-name">supermoto</div>
+            <div class="specs">
+                <div class="spec-item">
+                    <div class="spec-label">Cilindrada</div>
+                    <div class="spec-value">399 cc</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Motor</div>
+                    <div class="spec-value">4T</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Torque</div>
+                    <div class="spec-value">39 Nm</div>
+                </div>
+            </div>
+                <div class="stats-bar">
+                    <div class="stat">
+                        <div class="stat-name"><span>Facha</span><span>88%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="88%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+        <div class="vehicle-card" data-category="moto">
+            <div class="vehicle-image" style="background-image: url('https://www.motofichas.com/images/phocagallery/zontes/r350/01-zontes-r350-2023-estudio-blanco.jpg');">
+                <div class="vehicle-badge">Moto</div>
+            </div>
+            <div class="vehicle-info">
+                <div class="vehicle-name">zontes 350R</div>
+                <div class="specs">
+                <div class="spec-item">
+                    <div class="spec-label">Cilindrada</div>
+                    <div class="spec-value">348 cc</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Motor</div>
+                    <div class="spec-value">monocilíndrica</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Torque</div>
+                    <div class="spec-value">32.8 Nm</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Potencia</div>
+                    <div class="spec-value">39.44 cv</div>
+                </div>
+                </div>
+                <div class="stats-bar">
+                    <div class="stat">
+                        <div class="stat-name"><span>Facha</span><span>88%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="88%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+        <div class="vehicle-card" data-category="moto">
+            <div class="vehicle-image" style="background-image: url('https://www.motofichas.com/images/phocagallery/zontes/v350-2023/01-zontes-v350-2023-estudio.jpg');">
+                <div class="vehicle-badge">Moto</div>
+            </div>
+            <div class="vehicle-info">
+                <div class="vehicle-name">Zontes 350V</div>
+                <div class="specs">
+                <div class="spec-item">
+                    <div class="spec-label">Cilindrada</div>
+                    <div class="spec-value">348 cc</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Motor</div>
+                    <div class="spec-value">monocilíndrica</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Torque</div>
+                    <div class="spec-value">39.44 Nm</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Potencia</div>
+                    <div class="spec-value">40 cv</div>
+                </div>
+                </div>
+                <div class="stats-bar">
+                    <div class="stat">
+                        <div class="stat-name"><span>Facha</span><span>88%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="88%"></div></div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-name"><span>Onda Retro</span><span>95%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="95%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+        <div class="vehicle-card" data-category="moto">
+            <div class="vehicle-image" style="background-image: url('https://zontes.com.ar/wp-content/uploads/2026/04/Zontes-motos-argentina-200U.png');">
+                <div class="vehicle-badge">Moto</div>
+            </div>
+            <div class="vehicle-info">
+                <div class="vehicle-name">Zontes U3 200</div>
+                <div class="specs">
+                <div class="spec-item">
+                    <div class="spec-label">Cilindrada</div>
+                    <div class="spec-value">198 cc</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Motor</div>
+                    <div class="spec-value">monocilíndrica</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Torque</div>
+                    <div class="spec-value">39.44 Nm</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Potencia</div>
+                    <div class="spec-value">21,5 cv</div>
+                </div>
+                </div>
+                <div class="stats-bar">
+                    <div class="stat">
+                        <div class="stat-name"><span>Facha</span><span>88%</span></div>
+                        <div class="stat-bar"><div class="stat-fill" data-width="88%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------>
+        <button type="button" class="add-card" id="addTile" aria-label="Añadir vehículo">
+            <span class="plus">+</span>
+            <span>Añadir vehículo</span>
+        </button>
+    </div><!-- /garage-container -->
+
+    <div class="modal-backdrop" id="modal" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <h2 id="modalTitle">Añadir vehículo</h2>
+            <form id="addForm">
+                <label>Nombre
+                    <input id="f-nombre" required maxlength="60" placeholder="Ej: Infiniti G37">
+                </label>
+                <label>Categoría
+                    <select id="f-cat">
+                        <option value="deportivo">Deportivo</option>
+                        <option value="off-road">Off-Road</option>
+                        <option value="moto">Moto</option>
+                        <option value="camioneta">Camioneta</option>
+                    </select>
+                </label>
+                <label>URL de la foto (opcional)
+                    <input id="f-img" type="url" placeholder="https://...">
+                </label>
+                <div class="group-title">Datos</div>
+                <div id="specRows"></div>
+                <button type="button" class="link-btn" id="addSpec">+ Agregar dato</button>
+                <div class="group-title">Barras (0 a 100)</div>
+                <div id="statRows"></div>
+                <button type="button" class="link-btn" id="addStat">+ Agregar barra</button>
+                <div class="actions">
+                    <button type="button" class="btn" id="restoreBtn" style="margin-right:auto" hidden>Volver al original</button>
+                    <button type="button" class="btn" id="cancelBtn">Cancelar</button>
+                    <button type="submit" class="btn primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const CLAVE = 'garaje_vehiculos_propios';
+        const CLAVE_EDIC = 'garaje_ediciones';
+        const ETIQUETAS = { 'deportivo': 'Deportivo', 'off-road': 'Off-Road', 'moto': 'Moto', 'camioneta': 'Camioneta' };
+        const DATOS = ['Potencia', 'Motor', 'Torque', 'Velocidad Máx.', '0–100 km/h', 'Consumo',
+                       'Tracción', 'Cilindrada', 'Peso', 'Carga Máx.', 'F. Remolque', 'Caja'];
+
+        const grid = document.querySelector('.garage-container');
+        const addTile = document.getElementById('addTile');
+        const botonesFiltro = document.querySelectorAll('.filter-btn');
+        const modal = document.getElementById('modal');
+        const form = document.getElementById('addForm');
+        const specRows = document.getElementById('specRows');
+        const statRows = document.getElementById('statRows');
+        const restoreBtn = document.getElementById('restoreBtn');
+        let filtroActual = 'todos';
+        let editando = null;      // { card, esBase, id } cuando estás editando una tarjeta
+        const originales = {};    // copia de las tarjetas escritas en el código, para "Volver al original"
+
+        /* ── helpers ── */
+        function el(tag, clase, texto) {
+            const n = document.createElement(tag);
+            if (clase) n.className = clase;
+            if (texto !== undefined) n.textContent = texto;
+            return n;
+        }
+
+        function leer(clave, defecto) {
+            try {
+                const d = JSON.parse(localStorage.getItem(clave));
+                return d === null || d === undefined ? defecto : d;
+            } catch (e) { return defecto; }
+        }
+
+        function escribir(clave, valor) {
+            try { localStorage.setItem(clave, JSON.stringify(valor)); return true; }
+            catch (e) { return false; }
+        }
+
+        function cargar() { const d = leer(CLAVE, []); return Array.isArray(d) ? d : []; }
+        function guardar(lista) { return escribir(CLAVE, lista); }
+
+        let ediciones = leer(CLAVE_EDIC, {});   // cambios hechos a las tarjetas escritas en el código
+        if (typeof ediciones !== 'object' || Array.isArray(ediciones)) ediciones = {};
+        function guardarEdiciones() { return escribir(CLAVE_EDIC, ediciones); }
+
+        function avisarSiFalla(ok) {
+            if (!ok) alert('No pude guardarlo en este navegador, así que va a desaparecer al recargar la página.');
+        }
+
+        /* ── barras y filtro ── */
+        function animarBarras() {
+            const fills = document.querySelectorAll('.stat-fill[data-width]');
+            fills.forEach(f => { f.style.width = '0'; });
+            setTimeout(() => {
+                fills.forEach(f => {
+                    if (!f.closest('.vehicle-card').hidden) f.style.width = f.dataset.width;
+                });
+            }, 150);
+        }
+
+        function aplicarFiltro() {
+            document.querySelectorAll('.vehicle-card').forEach(c => {
+                c.hidden = filtroActual !== 'todos' && c.dataset.category !== filtroActual;
+            });
+            animarBarras();
+        }
+
+        botonesFiltro.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filtroActual = btn.dataset.filter;
+                botonesFiltro.forEach(b => b.classList.toggle('active', b === btn));
+                aplicarFiltro();
+            });
+        });
+
+        /* ── leer los datos de una tarjeta ya dibujada ── */
+        function leerTarjeta(card) {
+            const bg = card.querySelector('.vehicle-image').style.backgroundImage || '';
+            return {
+                nombre: card.querySelector('.vehicle-name').textContent.trim(),
+                categoria: card.dataset.category,
+                imagen: bg.replace(/^url\(["']?/, '').replace(/["']?\)$/, ''),
+                specs: [...card.querySelectorAll('.spec-item')].map(i => ({
+                    label: i.querySelector('.spec-label').textContent.trim(),
+                    value: i.querySelector('.spec-value').textContent.trim()
+                })),
+                stats: [...card.querySelectorAll('.stat')].map(st => ({
+                    name: st.querySelector('.stat-name span').textContent.trim(),
+                    pct: parseInt(st.querySelector('.stat-fill').dataset.width, 10) || 0
+                }))
+            };
+        }
+
+        /* ── dibujar tarjetas ── */
+        function botonEditar(card) {
+            const b = el('button', 'edit-btn', '✎');
+            b.type = 'button';
+            b.title = 'Editar';
+            b.addEventListener('click', e => { e.stopPropagation(); abrirModal(card); });
+            return b;
+        }
+
+        function crearTarjeta(v) {
+            const card = el('div', v.base ? 'vehicle-card' : 'vehicle-card custom');
+            card.dataset.category = v.categoria;
+            if (v.base) card.dataset.baseKey = v.id; else card.dataset.id = v.id;
+
+            card.appendChild(botonEditar(card));
+
+            if (!v.base) {
+                const del = el('button', 'delete-btn', '×');
+                del.type = 'button';
+                del.title = 'Borrar';
+                del.addEventListener('click', e => {
+                    e.stopPropagation();
+                    if (confirm('¿Borrar "' + v.nombre + '"?')) {
+                        guardar(cargar().filter(x => x.id !== v.id));
+                        card.remove();
+                    }
+                });
+                card.appendChild(del);
+            }
+
+            const img = el('div', 'vehicle-image');
+            if (/^(https?:|data:image\/)/i.test(v.imagen)) {
+                img.style.backgroundImage = 'url("' + v.imagen.replace(/"/g, '%22') + '")';
+            }
+            img.appendChild(el('div', 'vehicle-badge', ETIQUETAS[v.categoria] || v.categoria));
+            card.appendChild(img);
+
+            const info = el('div', 'vehicle-info');
+            info.appendChild(el('div', 'vehicle-name', v.nombre));
+
+            if (v.specs.length) {
+                const specs = el('div', 'specs');
+                v.specs.forEach(s => {
+                    const it = el('div', 'spec-item');
+                    it.appendChild(el('div', 'spec-label', s.label));
+                    it.appendChild(el('div', 'spec-value', s.value));
+                    specs.appendChild(it);
+                });
+                info.appendChild(specs);
+            }
+
+            if (v.stats.length) {
+                const bar = el('div', 'stats-bar');
+                v.stats.forEach(s => {
+                    const st = el('div', 'stat');
+                    const nm = el('div', 'stat-name');
+                    nm.appendChild(el('span', '', s.name));
+                    nm.appendChild(el('span', '', s.pct + '%'));
+                    st.appendChild(nm);
+                    const sb = el('div', 'stat-bar');
+                    const fill = el('div', 'stat-fill');
+                    fill.dataset.width = s.pct + '%';
+                    sb.appendChild(fill);
+                    st.appendChild(sb);
+                    bar.appendChild(st);
+                });
+                info.appendChild(bar);
+            }
+
+            card.appendChild(info);
+            return card;
+        }
+
+        /* ── formulario ── */
+        function botonQuitar(fila) {
+            const x = el('button', 'row-x', '×');
+            x.type = 'button';
+            x.title = 'Quitar';
+            x.addEventListener('click', () => fila.remove());
+            return x;
+        }
+
+        function filaSpec(label, valorInicial) {
+            const r = el('div', 'row');
+
+            const sel = el('select', 'spec-select');
+            DATOS.forEach(d => {
+                const o = el('option', '', d);
+                o.value = d;
+                sel.appendChild(o);
+            });
+            const otro = el('option', '', 'Otro…');
+            otro.value = '__otro';
+            sel.appendChild(otro);
+
+            const valor = el('input', 'spec-valor');
+            valor.placeholder = 'Valor (ej: 200 HP)';
+            valor.maxLength = 40;
+
+            const custom = el('input', 'spec-custom');
+            custom.placeholder = 'Nombre del dato';
+            custom.maxLength = 30;
+
+            if (label) {
+                // editando: elige el dato del menú, o "Otro…" si no está en la lista
+                const conocido = DATOS.find(d => d.toLowerCase() === label.toLowerCase());
+                if (conocido) { sel.value = conocido; }
+                else { sel.value = '__otro'; custom.value = label; }
+                valor.value = valorInicial || '';
+            } else {
+                // fila nueva: el primer dato que todavía no usaste
+                const usados = [...specRows.querySelectorAll('.spec-select')].map(x => x.value);
+                sel.value = DATOS.find(d => !usados.includes(d)) || '__otro';
+            }
+
+            const mostrarCustom = () => {
+                custom.style.display = sel.value === '__otro' ? 'block' : 'none';
+            };
+            sel.addEventListener('change', () => {
+                mostrarCustom();
+                if (sel.value === '__otro') custom.focus();
+            });
+            mostrarCustom();
+
+            r.append(sel, valor, botonQuitar(r), custom);
+            specRows.appendChild(r);
+        }
+
+        function filaStat(nombre, pct) {
+            const r = el('div', 'row');
+            const a = el('input'); a.placeholder = 'Barra (ej: Facha)'; a.maxLength = 30;
+            const b = el('input'); b.type = 'number'; b.min = 0; b.max = 100; b.placeholder = '%';
+            if (nombre) { a.value = nombre; b.value = pct; }
+            r.append(a, b, botonQuitar(r));
+            statRows.appendChild(r);
+        }
+
+        // abrirModal()      -> añadir un vehículo nuevo
+        // abrirModal(card)  -> editar esa tarjeta
+        function abrirModal(card) {
+            form.reset();
+            specRows.innerHTML = '';
+            statRows.innerHTML = '';
+            restoreBtn.hidden = true;
+            editando = null;
+
+            if (card) {
+                const v = leerTarjeta(card);
+                const esBase = !!card.dataset.baseKey;
+                editando = { card, esBase, id: esBase ? card.dataset.baseKey : card.dataset.id };
+
+                document.getElementById('modalTitle').textContent = 'Editar vehículo';
+                document.getElementById('f-nombre').value = v.nombre;
+                document.getElementById('f-cat').value = v.categoria;
+                document.getElementById('f-img').value = v.imagen;
+                v.specs.forEach(sp => filaSpec(sp.label, sp.value));
+                if (!v.specs.length) filaSpec();
+                v.stats.forEach(st => filaStat(st.name, st.pct));
+                if (!v.stats.length) filaStat();
+                restoreBtn.hidden = !(esBase && ediciones[editando.id]);
+            } else {
+                document.getElementById('modalTitle').textContent = 'Añadir vehículo';
+                filaSpec(); filaSpec(); filaStat();
+                if (filtroActual !== 'todos') document.getElementById('f-cat').value = filtroActual;
+            }
+
+            modal.hidden = false;
+            document.body.style.overflow = 'hidden';
+            document.getElementById('f-nombre').focus();
+        }
+
+        function cerrarModal() {
+            modal.hidden = true;
+            document.body.style.overflow = '';
+            editando = null;
+        }
+
+        addTile.addEventListener('click', () => abrirModal());
+        document.getElementById('addSpec').addEventListener('click', () => filaSpec());
+        document.getElementById('addStat').addEventListener('click', () => filaStat());
+        document.getElementById('cancelBtn').addEventListener('click', cerrarModal);
+        modal.addEventListener('click', e => { if (e.target === modal) cerrarModal(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden) cerrarModal(); });
+
+        function mostrarTarjeta(card, categoria) {
+            // si estás filtrando otra categoría, cambia a la de la tarjeta
+            if (filtroActual !== 'todos' && filtroActual !== categoria) {
+                document.querySelector('.filter-btn[data-filter="' + categoria + '"]').click();
+            } else {
+                aplicarFiltro();
+            }
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const nombre = document.getElementById('f-nombre').value.trim();
+            if (!nombre) return;
+
+            const specs = [...specRows.children].map(r => {
+                const sel = r.querySelector('.spec-select');
+                const label = sel.value === '__otro' ? r.querySelector('.spec-custom').value.trim() : sel.value;
+                return { label, value: r.querySelector('.spec-valor').value.trim() };
+            }).filter(sp => sp.label && sp.value);
+
+            const stats = [...statRows.children].map(r => {
+                const i = r.querySelectorAll('input');
+                const n = parseInt(i[1].value, 10);
+                return { name: i[0].value.trim(), pct: Math.min(100, Math.max(0, n)) };
+            }).filter(st => st.name && !isNaN(st.pct));
+
+            const v = {
+                id: editando ? editando.id : Date.now().toString(36),
+                nombre,
+                categoria: document.getElementById('f-cat').value,
+                imagen: document.getElementById('f-img').value.trim(),
+                specs,
+                stats
+            };
+
+            let card;
+            if (editando) {
+                if (editando.esBase) {
+                    v.base = true;
+                    ediciones[v.id] = v;
+                    avisarSiFalla(guardarEdiciones());
+                } else {
+                    avisarSiFalla(guardar(cargar().map(x => x.id === v.id ? v : x)));
+                }
+                card = crearTarjeta(v);
+                editando.card.replaceWith(card);   // queda en el mismo lugar
+            } else {
+                const lista = cargar();
+                lista.push(v);
+                avisarSiFalla(guardar(lista));
+                card = crearTarjeta(v);
+                grid.insertBefore(card, addTile);
+            }
+
+            cerrarModal();
+            mostrarTarjeta(card, v.categoria);
+        });
+
+        // "Volver al original": descarta tus cambios en una tarjeta escrita en el código
+        restoreBtn.addEventListener('click', () => {
+            if (!editando || !editando.esBase) return;
+            const key = editando.id;
+            delete ediciones[key];
+            guardarEdiciones();
+            const orig = originales[key].cloneNode(true);
+            prepararBase(orig, key);
+            editando.card.replaceWith(orig);
+            cerrarModal();
+            aplicarFiltro();
+        });
+
+        /* ── arranque ── */
+        const conteo = {};
+        function claveBase(nombre) {
+            const slug = nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            conteo[slug] = (conteo[slug] || 0) + 1;
+            return 'base:' + slug + '#' + conteo[slug];
+        }
+
+        function prepararBase(card, key) {
+            card.dataset.baseKey = key;
+            card.appendChild(botonEditar(card));
+        }
+
+        // tarjetas escritas en el código: les pone el botón de editar y aplica tus cambios guardados
+        document.querySelectorAll('.vehicle-card').forEach(card => {
+            const key = claveBase(card.querySelector('.vehicle-name').textContent);
+            originales[key] = card.cloneNode(true);
+            if (ediciones[key]) card.replaceWith(crearTarjeta(ediciones[key]));
+            else prepararBase(card, key);
+        });
+
+        // vehículos añadidos con el "+"
+        cargar().forEach(v => grid.insertBefore(crearTarjeta(v), addTile));
+
+        document.addEventListener('DOMContentLoaded', animarBarras);
+    </script>
+</body>
+</html>
